@@ -2,6 +2,8 @@
 clc
 clear all
 
+tic;
+
 % random seed
 rng(5);
 
@@ -63,19 +65,6 @@ eb2=sqrt(eb2);
 
 BS_angle=rand(1,1);
 RIS_angle=rand(1,1);
-%Distance Exponent
-% dist_BS1_to_EU =   sqrt((-100)^2 + (0)^2);
-% dist_BS2_to_EU =  sqrt((100)^2 + (0)^2);
-% dist_RIS1_to_EU =  sqrt((-75)^2 + (-40)^2);
-% dist_RIS2_to_EU =  sqrt((75)^2 + (40)^2);
-% dist_RIS1_to_SU1 =  (rand(1,1)*(sqrt((50)^2 + (40-30)^2) - sqrt((50-25)^2 +(40-30)^2))) + sqrt((50-25)^2 +(40-30)^2);
-% dist_RIS2_to_SU2 =  (rand(1,1)*(sqrt((-50)^2 + (-40+30)^2) - sqrt((-50+25)^2 +(-40+30)^2))) + sqrt((-50+25)^2 +(-40+30)^2);
-% dist_BS1_to_RIS1 =  sqrt((-25)^2 + (40)^2);
-% dist_BS2_to_RIS2 = sqrt((25)^2 + (-40)^2);
-% dist_SU1_to_EU =  (rand(1,1)*(sqrt((75)^2 + (30)^2) - sqrt((75-25)^2 +(30-0)^2))) + sqrt((75-25)^2 +(30-0)^2);
-% dist_SU2_to_EU =  (rand(1,1)*(sqrt((-75)^2 + (30)^2) - sqrt((-75+25)^2 +(30-0)^2))) + sqrt((-75+25)^2 +(30-0)^2); 
-% dist_BS1_to_SU1 =   (rand(1,1)*(sqrt((50)^2 + (0)^2) - sqrt((50-25)^2 +(0-30)^2))) + sqrt((50-25)^2 +(0)^2);
-% dist_BS2_to_SU2 =  (rand(1,1)*(sqrt((-50)^2 + (0)^2) - sqrt((-50+25)^2 +(0-30)^2))) + sqrt((-50+25)^2 +(0)^2);
 
 nRIS_rate_case1 = [];
 nRIS_rate_case2 = [];
@@ -83,7 +72,7 @@ nRIS_rate_case3 = [];
 
 disp('***Alternating Optimization Started***');
 disp('--------------------------');
-Sum_idx = 1:2 ;
+Sum_idx = 1:10 ;
 
 
 
@@ -117,7 +106,6 @@ for idx_npow = 1:length(pow_vec)
     total_rate_case1 = [];
     total_rate_case2 = [];
     total_rate_case3 = [];
-    %clc;
     disp(['Number of RIS elements are:' num2str(N)]); 
     
     
@@ -248,11 +236,8 @@ total_rate_case1(idx) = SU1_rate_case1 + SU2_rate_case1 + EU_rate_case1;
 total_rate_case2(idx) = SU1_rate_case2 + SU2_rate_case2 + EU_rate_case2;
 total_rate_case3(idx) = SU1_rate_case3 + SU2_rate_case3 + EU_rate_case3;
 y = [idx, total_rate_case1(idx), SU1_rate_case1, SU2_rate_case1, EU_rate_case1];
-% idx, total_rate_case2(idx), SU1_rate_case2, SU2_rate_case2, EU_rate_case2;...
-%     idx, total_rate_case3(idx), SU1_rate_case3, SU2_rate_case3, EU_rate_case3];
-% y = [idx, total_rate_case1(idx), SU1_rate_case1, SU2_rate_case1, EU_rate_case1;idx, total_rate_case2(idx), SU1_rate_case2, SU2_rate_case2, EU_rate_case2];
- y2 = [idx, total_rate_case2(idx), SU1_rate_case2, SU2_rate_case2, EU_rate_case2];
- y3 = [idx, total_rate_case3(idx), SU1_rate_case3, SU2_rate_case3, EU_rate_case3];
+y2 = [idx, total_rate_case2(idx), SU1_rate_case2, SU2_rate_case2, EU_rate_case2];
+y3 = [idx, total_rate_case3(idx), SU1_rate_case3, SU2_rate_case3, EU_rate_case3];
 disp('**************************');
 disp('    Ch. #  | Sumrate | SU1 rate | SU2 rate | EU rate')
 disp(y)
@@ -282,23 +267,6 @@ fprintf(fileID_p_case3,'%7.3d  \n',p3);
 fprintf(fileID_v_case3,'%7.3d  \n',v3);
 end
 sumrate_case1 = mean(nRIS_rate_case1);
- sumrate_case2 = mean(nRIS_rate_case2);
- sumrate_case3 = mean(nRIS_rate_case3);
-
-
-
-
-
-
-%figure(3)
-%hold on
-%grid on
-%title('Power');
-%ylabel('Distance between RIS and SU');
-%xlabel('Sumrate');
-%plot(sumrate_case1,dist_RIS1_to_SU1, sumrate_case2,dist_RIS1_to_SU1, sumrate_case3,dist_RIS1_to_SU1,'o') ;
-%plot(sumrate_case1,dist_RIS2_to_SU2, sumrate_case2,dist_RIS2_to_SU2, sumrate_case3,dist_RIS2_to_SU2,'o') ;
-%plot(sumrate_case1,dist_RIS3_to_SU1, sumrate_case2,dist_RIS3_to_SU1, sumrate_case3,dist_RIS3_to_SU1,'o') ;
-%plot(sumrate_case1,dist_RIS3_to_SU2, sumrate_case2,dist_RIS3_to_SU2, sumrate_case3,dist_RIS3_to_SU2,'o') ;
-%hold off
-
+sumrate_case2 = mean(nRIS_rate_case2);
+sumrate_case3 = mean(nRIS_rate_case3);
+toc
