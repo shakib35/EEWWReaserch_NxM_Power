@@ -11,10 +11,9 @@ scenarios = 1;
 
 M = 10; %number of antennas at BS
 N = 200 ; %number of RIS elements
-nIterations = 500; % No. of iteration needed for SCA algorithm
+nIterations = 2000; % No. of iteration needed for SCA algorithm
 
 r_min_EU = 0.0001; 
-
 
 
 %Base Station Power = Power at transmitter (Ptx)
