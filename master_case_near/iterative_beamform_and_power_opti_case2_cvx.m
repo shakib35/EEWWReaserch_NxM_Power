@@ -23,7 +23,7 @@ pt_next = 0.5*ones(8,1);
 qt_next = 0.5*ones(8,1);
 % u_next = 0.005*ones(1,1);
 tol = 1e-2;     
-cvx_solver Mosek
+cvx_solver SDPT3
 cvx_precision high
 
 while(1)

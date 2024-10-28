@@ -11,13 +11,13 @@ scenarios = 1;
 
 M = 10; %number of antennas at BS
 N = 200 ; %number of RIS elements
-nIterations = 2000; % No. of iteration needed for SCA algorithm
+nIterations = 200; % No. of iteration needed for SCA algorithm
 
 r_min_EU = 0.0001; 
 
 
 %Base Station Power = Power at transmitter (Ptx)
-pow_vec = [25,30,35,40,45]; %(2-14-22)
+pow_vec = [25 30 35 40 45 ]; %(2-14-22)
 
 %Power variable for SUs
 PS1_dBm = 25;%30 %35
@@ -36,8 +36,8 @@ BS1_loc = [-200, 0];
 BS2_loc = [200, 0];
 
 RIS1_loc = [-100,100];
-RIS2_loc = [200,20];
-RIS3_loc = [0,10];
+RIS2_loc = [100,100];
+RIS3_loc = [0,100];
 
 edge_user_loc = [0,0];
 cell_user_loc = [-120,20;100,30];
@@ -66,12 +66,18 @@ BS_angle=rand(1,1);
 RIS_angle=rand(1,1);
 
 nRIS_rate_case1 = [];
+SU_case1 =[];
+EU_case1 = [];
 nRIS_rate_case2 = [];
+SU_case2 =[];
+EU_case2 = [];
 nRIS_rate_case3 = [];
+SU_case3 =[];
+EU_case3 = [];
 
 disp('***Alternating Optimization Started***');
 disp('--------------------------');
-Sum_idx = 1:10 ;
+Sum_idx = 1:500  ;
 
 
 
@@ -84,14 +90,20 @@ for idx_npow = 1:length(pow_vec)
     
     fileID_case3_vs_pow = fopen("Sumrate_case3_vs_pow_" + pow_vec(idx_npow) + "dBm.txt",'w');
     
-    fileID_p_case1         =fopen("P_case1_"+ pow_vec(idx_npow) + "dBm.txt",'w');
-    fileID_v_case1         =fopen("V_case1_"+ pow_vec(idx_npow) + "dBm.txt",'w');
+    fileID_su12_c1         =fopen("su12_case1_"+ pow_vec(idx_npow) + "dBm.txt",'w');
+    fileID_eu_c1         =fopen("eu_case1_"+ pow_vec(idx_npow) + "dBm.txt",'w');
 
-    fileID_p_case2         =fopen("P_case2_"+ pow_vec(idx_npow) + "dBm.txt",'w');
-    fileID_v_case2         =fopen("V_case2_"+ pow_vec(idx_npow) + "dBm.txt",'w');
+    fileID_su12_c2         =fopen("su12_case2_"+ pow_vec(idx_npow) + "dBm.txt",'w');
+    fileID_eu_c2         =fopen("eu_case2_"+ pow_vec(idx_npow) + "dBm.txt",'w');
 
-    fileID_p_case3       =fopen("P_case3_"+ pow_vec(idx_npow) + "dBm.txt",'w');
-    fileID_v_case3       =fopen("V_case3_"+ pow_vec(idx_npow) + "dBm.txt",'w');
+    fileID_su12_c3       =fopen("su12_case3_"+ pow_vec(idx_npow) + "dBm.txt",'w');
+    fileID_eu_c3       =fopen("eu_case3_"+ pow_vec(idx_npow) + "dBm.txt",'w');
+    
+    fileID_time_case1       =fopen("T_case1_"+ pow_vec(idx_npow) + "dBm.txt",'w');
+    fileID_time_case2       =fopen("T_case2_"+ pow_vec(idx_npow) + "dBm.txt",'w');
+    fileID_time_case3      =fopen("T_case3_"+ pow_vec(idx_npow) + "dBm.txt",'w');
+    
+    
 
     PB1_dBm = pow_vec(idx_npow);%power of BS1   ---------------------------------------------------------------------
     PB1_dB = PB1_dBm-30;
@@ -103,8 +115,15 @@ for idx_npow = 1:length(pow_vec)
 
     
     total_rate_case1 = [];
+    SU_array_c1  =[];
+    EU_array_c1  =[];
     total_rate_case2 = [];
+    SU_array_c2  =[];
+    EU_array_c2  =[];
+    
     total_rate_case3 = [];
+    SU_array_c3 =[];
+    EU_array_c3  =[];
     disp(['Number of RIS elements are:' num2str(N)]); 
     
     
@@ -207,6 +226,7 @@ for idx_npow = 1:length(pow_vec)
     w_int = random_unit_vector(M,4);
 
 %         case 1
+        tic;
     vec_theta_case1 = rand(1,N)*pi/2;
     phase_vec_case1 = exp(1j*vec_theta_case1.*2.*pi);
     [sumrate_case1, SU1_rate_case1, SU2_rate_case1, EU_rate_case1,p,v]=AO_CaseOne_cvx(phase_vec_case1, w_int, r_min_EU, PS1, PS2, PB1, PB2,...
@@ -214,8 +234,12 @@ for idx_npow = 1:length(pow_vec)
     ch_SU2_to_EU1, ch_BS1_to_SU1,  ch_BS2_to_SU2, ch_RIS1_to_SU1, ch_SU1_to_RIS1, noise_power, nIterations);
 sumSEsystem(idx_npow,idx,:) = [pow_vec(idx_npow), idx, SU1_rate_case1, SU2_rate_case1, EU_rate_case1];
             fprintf(fileID_case1_vs_pow,'%7d %10d %10.2f %10.4f %10.2f\n',sumSEsystem(idx_npow,idx,:));
+            t1=toc;
+            fprintf(fileID_time_case1,'%3f \n',t1);
+            
             
        % case 2
+        tic;
     vec_theta_case2 = rand(2,N)*pi/2;
     phase_vec_case2 = exp(1j*vec_theta_case2.*2.*pi);
     [sumrate_case2, SU1_rate_case2, SU2_rate_case2, EU_rate_case2,p2,v2]=AO_CaseTwo_cvx(phase_vec_case2, w_int, r_min_EU, PS1, PS2, PB1, PB2,...
@@ -223,17 +247,28 @@ sumSEsystem(idx_npow,idx,:) = [pow_vec(idx_npow), idx, SU1_rate_case1, SU2_rate_
     ch_SU2_to_EU1, ch_BS1_to_SU1,  ch_BS2_to_SU2, ch_RIS1_to_SU1, ch_SU1_to_RIS1, ch_RIS2_to_SU2, ch_SU2_to_RIS2, noise_power, nIterations);
 sumSEsystem(idx_npow,idx,:) = [pow_vec(idx_npow), idx, SU1_rate_case2, SU2_rate_case2, EU_rate_case2];
             fprintf(fileID_case2_vs_pow,'%7d %10d %10.2f %10.4f %10.2f\n',sumSEsystem(idx_npow,idx,:));
+             t2=toc;
+            fprintf(fileID_time_case2,'%3f \n',t2);
 
 %         case 3
+       tic;
     [sumrate_case3, SU1_rate_case3, SU2_rate_case3, EU_rate_case3,p3,v3]=AO_CaseThree_cvx(phase_vec_case1, w_int, r_min_EU, PS1, PS2, PB1, PB2,...
     ch_BS1_to_EU1, ch_BS2_to_EU1, ch_RIS3_to_EU, ch_BS1_to_RIS3, ch_BS2_to_RIS3, ch_SU1_to_EU1, ...
     ch_SU2_to_EU1, ch_BS1_to_SU1,  ch_BS2_to_SU2, ch_RIS3_to_SU1, ch_SU1_to_RIS3, ch_RIS3_to_SU2, ch_SU2_to_RIS3, noise_power, nIterations);
 sumSEsystem(idx_npow,idx,:) = [pow_vec(idx_npow), idx, SU1_rate_case3, SU2_rate_case3, EU_rate_case3];
             fprintf(fileID_case3_vs_pow,'%7d %10d %10.2f %10.4f %10.2f\n',sumSEsystem(idx_npow,idx,:));
+            t3=toc;
+            fprintf(fileID_time_case3,'%3f \n',t3);
 
 total_rate_case1(idx) = SU1_rate_case1 + SU2_rate_case1 + EU_rate_case1;
+SU_array_c1(idx)         = SU1_rate_case1 + SU2_rate_case1;
+EU_array_c1(idx)         = EU_rate_case1;
 total_rate_case2(idx) = SU1_rate_case2 + SU2_rate_case2 + EU_rate_case2;
+SU_array_c2(idx)         = SU1_rate_case2 + SU2_rate_case2;
+EU_array_c2(idx)         = EU_rate_case2;
 total_rate_case3(idx) = SU1_rate_case3 + SU2_rate_case3 + EU_rate_case3;
+SU_array_c3(idx)         = SU1_rate_case3 + SU2_rate_case3;
+EU_array_c3(idx)         = EU_rate_case3;
 y = [idx, total_rate_case1(idx), SU1_rate_case1, SU2_rate_case1, EU_rate_case1];
 y2 = [idx, total_rate_case2(idx), SU1_rate_case2, SU2_rate_case2, EU_rate_case2];
 y3 = [idx, total_rate_case3(idx), SU1_rate_case3, SU2_rate_case3, EU_rate_case3];
@@ -242,30 +277,39 @@ disp('    Ch. #  | Sumrate | SU1 rate | SU2 rate | EU rate')
 disp(y)
 disp(y2)
 disp(y3)
+
 disp('**************************');
 
 %     total_rate;
 
     end
-    nRIS_rate_case1(idx_npow) = mean(total_rate_case1)
-    % SU_case1(idx_npow)        = mean(SU1_rate_case1 + SU2_rate_case1)
-    % EU_case1(idx_npow)        = mean (EU_rate_case1)
-    nRIS_rate_case2(idx_npow) = mean(total_rate_case2)
-    % SU_case2(idx_npow)        = mean(SU1_rate_case2 + SU2_rate_case2)
-    % EU_case2(idx_npow)        = mean (EU_rate_case2)
-    nRIS_rate_case3(idx_npow) = mean(total_rate_case3)
-    % SU_case3(idx_npow)        = mean(SU1_rate_case3 + SU2_rate_case3)
-    % EU_case3(idx_npow)        = mean (EU_rate_case3)
-fprintf(fileID_p_case1,'%7.3d  \n',p);
-fprintf(fileID_v_case1,'%7.3d  \n',v);
+    nRIS_rate_case1(idx_npow) = mean(total_rate_case1);
+    SU_case1(idx_npow)        = mean(SU_array_c1);
+    EU_case1(idx_npow)        = mean (EU_array_c1);
+    nRIS_rate_case2(idx_npow) = mean(total_rate_case2);
+    SU_case2(idx_npow)        = mean(SU_array_c2);
+    EU_case2(idx_npow)        = mean (EU_array_c2);
+    nRIS_rate_case3(idx_npow) = mean(total_rate_case3);
+    SU_case3(idx_npow)        = mean(SU_array_c3);
+    EU_case3(idx_npow)        = mean (EU_array_c3);
 
-fprintf(fileID_p_case2,'%7.3d  \n',p2);
-fprintf(fileID_v_case2,'%7.3d  \n',v2);
-
-fprintf(fileID_p_case3,'%7.3d  \n',p3);
-fprintf(fileID_v_case3,'%7.3d  \n',v3);
 end
-sumrate_case1 = mean(nRIS_rate_case1);
-sumrate_case2 = mean(nRIS_rate_case2);
-sumrate_case3 = mean(nRIS_rate_case3);
-toc
+% sumrate_case1 = mean(nRIS_rate_case1);
+% sumrate_case2 = mean(nRIS_rate_case2);
+% sumrate_case3 = mean(nRIS_rate_case3);
+Su12_c1=(SU_case1)
+eu_c1=(EU_case1)
+Su12_c2=(SU_case2)
+eu_c2=(EU_case2)
+Su12_c3=(SU_case3)
+eu_c3=(EU_case3)
+fprintf(fileID_su12_c1,'%3f %3f %3f %3f %3f \n',SU_case1);
+fprintf(fileID_eu_c1,'%3f %3f %3f %3f %3f \n',EU_case1);
+
+fprintf(fileID_su12_c2,'%3f %3f %3f %3f %3f  \n',SU_case2);
+fprintf(fileID_eu_c2,'%3f %3f %3f %3f %3f \n',EU_case2);
+
+fprintf(fileID_su12_c3,'%3f %3f %3f %3f %3f \n',SU_case3);
+fprintf(fileID_eu_c3,'%3f %3f %3f %3f %3f \n',EU_case3);
+x = toc
+

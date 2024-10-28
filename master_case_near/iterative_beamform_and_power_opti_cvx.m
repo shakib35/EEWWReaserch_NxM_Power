@@ -20,7 +20,7 @@ qt_next = 0.05*ones(7,1);
 
 scale_1 = 1e-2/noise_power;
 tol = 1e-2;     
-cvx_solver Mosek
+cvx_solver SDPT3
 cvx_precision high
 
 while(1)

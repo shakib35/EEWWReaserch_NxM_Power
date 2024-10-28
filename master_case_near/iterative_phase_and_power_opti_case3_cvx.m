@@ -26,7 +26,7 @@ y_next = 0.05*ones(N,1);
 tol = 1e-2;     
 % cvx_solver Mosek
 % cvx_solver sedumi
-cvx_solver sdpt3
+cvx_solver SDPT3
 cvx_precision high
 % cvx_solver_settings('MSK_IPAR_INFEAS_REPORT_AUTO','MSK_ON','MSK_IPAR_INFEAS_REPORT_LEVEL',1)
 while(1)
